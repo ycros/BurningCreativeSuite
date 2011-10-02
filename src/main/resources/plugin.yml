@@ -7,6 +7,7 @@ main: me.ahniolator.plugins.burningcreativesuite.BurningCreativeSuite
 name: Burning Creative Suite
 startup: postworld
 version: '1.4'
+softdepend: [WorldGuard, LogBlock]
 permissions:
   bcs.*:
     description: Gives all permissions nodes

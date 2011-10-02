@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import de.diddiz.LogBlock.LogBlock;
 import me.ahniolator.plugins.burningcreativesuite.commands.BCSGiveExecutor;
 import me.ahniolator.plugins.burningcreativesuite.wand.BCSWandExecutor;
 import me.ahniolator.plugins.burningcreativesuite.wand.BCSWandPlayerListener;
@@ -16,6 +19,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
@@ -38,6 +43,8 @@ public class BurningCreativeSuite extends JavaPlugin {
     public boolean isTimeFrozen = false;
     public World world;
     public long startTime;
+    public WorldGuardPlugin worldGuard;
+    public LogBlock logBlock;
     private String dir;
     private String dataDir;
     private Configuration yml;
@@ -59,6 +66,17 @@ public class BurningCreativeSuite extends JavaPlugin {
         this.blockListener = new BCSBlockListener(this, this.playerListener, this.blockListener, this.config, this.entityListener, this.dataDir, this.invManager);
         this.playerListener = new BCSPlayerListener(this, this.playerListener, this.blockListener, this.config, this.entityListener, this.dataDir, this.invManager, tellUpdate);
         this.entityListener = new BCSEntityListener(this, this.playerListener, this.blockListener, this.config, this.entityListener, this.dataDir, this.invManager);
+        PluginManager pluginManager = getServer().getPluginManager();
+        Plugin plugin = pluginManager.getPlugin("WorldGuard");
+        if (plugin instanceof WorldGuardPlugin) {
+            worldGuard = (WorldGuardPlugin)plugin;
+            System.out.println("[BurningCS] Hooking into WorldGuard.");
+        }
+        plugin = pluginManager.getPlugin("LogBlock");
+        if (plugin instanceof LogBlock) {
+            logBlock = (LogBlock) plugin;
+            System.out.println("[BurningCS] Hooking into LogBlock.");
+        }
         if (newimplemented) {
             this.bcsge = new BCSGiveExecutor(this, this.config);
             this.bcswe = new BCSWandExecutor(this, this.config);

@@ -78,9 +78,13 @@ public class BCSBlockListener extends BlockListener {
         if (event.isCancelled()) {
             return;
         }
+        Player player = event.getPlayer();
+        Block block = event.getBlock();
+        if (plugin.worldGuard != null && !plugin.worldGuard.canBuild(player, block))
+            return;
+        int oldBlockType = block.getTypeId();
+        byte oldBlockData = block.getData();
         try {
-            Player player = event.getPlayer();
-            Block block = event.getBlock();
             y = block.getLocation().getBlockY();
             if (block.getType() == Material.BEDROCK && block.getLocation().getBlockY() <= 5 && !player.hasPermission("bcm.breakbedrock")) {
                 if (!this.config.yml.getBoolean("Creative Players.Disable Bottom-of-the-World Bedrock Break", true)) {
@@ -222,6 +226,10 @@ public class BCSBlockListener extends BlockListener {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (event.isCancelled() && plugin.logBlock != null) {
+                plugin.logBlock.getConsumer().queueBlockBreak(player.getName(), block.getLocation(), oldBlockType, oldBlockData);
+            }
         }
         if (this.devMode) {
             this.stoptime = System.currentTimeMillis();
